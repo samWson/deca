@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Samuel Wilson"
+	],
+	"copyright": "Copyright © 2021, Samuel Wilson",
+	"description": "A minimal text editor in under 1000 lines of code.",
+	"license": "BSD-3-Clause",
+	"name": "deca"
+}

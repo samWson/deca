@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/deca
+deca.so
+deca.dylib
+deca.dll
+deca.a
+deca.lib
+deca-test-*
+*.exe
+*.o
+*.obj
+*.lst
+
+*.sublime-workspace
