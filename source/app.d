@@ -1,3 +1,4 @@
+import std.ascii;
 import std.stdio;
 import core.sys.linux.termios;
 import core.sys.linux.unistd;
@@ -27,9 +28,13 @@ int main()
 	while (!stdin.eof && buffer != ['q'])
 	{
 		buffer = stdin.rawRead(new char[1]);
+		char c = buffer[0];
 
-		write("you entered: ");
-		writeln(buffer);
+		if (isControl(c)) {
+			writefln("%d", c);
+		} else {
+			writefln("%d ('%c')", c, c);
+		}
 	}
 
 	return 0;
