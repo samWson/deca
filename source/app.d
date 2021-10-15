@@ -2,11 +2,16 @@ import std.stdio;
 import core.sys.linux.termios;
 import core.sys.linux.unistd;
 
+termios originalTermios;
+
+void disableRawMode() {
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
+}
+
 void enableRawMode() {
-	termios raw;
+	tcgetattr(STDIN_FILENO, &originalTermios);
 
-	tcgetattr(STDIN_FILENO, &raw);
-
+	termios raw = originalTermios;
 	raw.c_lflag &= ~ECHO;
 
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
@@ -15,6 +20,7 @@ void enableRawMode() {
 int main()
 {
 	enableRawMode();
+	scope(exit) disableRawMode();
 
 	char[] buffer;
 
