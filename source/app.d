@@ -6,36 +6,35 @@ import core.sys.linux.unistd;
 termios originalTermios;
 
 void disableRawMode() {
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
 }
 
 void enableRawMode() {
-	tcgetattr(STDIN_FILENO, &originalTermios);
+    tcgetattr(STDIN_FILENO, &originalTermios);
 
-	termios raw = originalTermios;
-	raw.c_lflag &= ~(ECHO | ICANON | ISIG);
+    termios raw = originalTermios;
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
 
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
-int main()
-{
-	enableRawMode();
-	scope(exit) disableRawMode();
+int main() {
+    enableRawMode();
+    scope (exit)
+        disableRawMode();
 
-	char[] buffer;
+    char[] buffer;
 
-	while (!stdin.eof && buffer != ['q'])
-	{
-		buffer = stdin.rawRead(new char[1]);
-		char c = buffer[0];
+    while (!stdin.eof && buffer != ['q']) {
+        buffer = stdin.rawRead(new char[1]);
+        char c = buffer[0];
 
-		if (isControl(c)) {
-			writefln("%d", c);
-		} else {
-			writefln("%d ('%c')", c, c);
-		}
-	}
+        if (isControl(c)) {
+            writefln("%d", c);
+        } else {
+            writefln("%d ('%c')", c, c);
+        }
+    }
 
-	return 0;
+    return 0;
 }
