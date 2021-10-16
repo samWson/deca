@@ -7,7 +7,11 @@ import core.stdc.errno;
 import core.stdc.stdio;
 import core.stdc.stdlib;
 
+// *** data ***
+
 termios originalTermios;
+
+// *** terminal ***
 
 void die(const char* message) {
     perror(message);
@@ -34,6 +38,8 @@ void enableRawMode() {
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
         die("tcsetattr");
 }
+
+// *** init ***
 
 int main() {
     enableRawMode();
