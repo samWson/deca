@@ -9,7 +9,7 @@ import core.stdc.stdlib;
 
 termios originalTermios;
 
-void die(const char *message) {
+void die(const char* message) {
     perror(message);
     exit(1);
 }
@@ -51,7 +51,8 @@ int main() {
             writefln("%d ('%c')\r", c, c);
         }
 
-        if (c == 'q') break;
+        if (c == 'q')
+            break;
     }
 
     return 0;
