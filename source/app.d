@@ -3,15 +3,25 @@ import std.stdio;
 import core.sys.linux.termios;
 import core.sys.linux.unistd;
 import core.sys.linux.stdio;
+import core.stdc.errno;
+import core.stdc.stdio;
+import core.stdc.stdlib;
 
 termios originalTermios;
 
+void die(const char *message) {
+    perror(message);
+    exit(1);
+}
+
 void disableRawMode() {
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios);
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios) == -1)
+        die("tcsetattr");
 }
 
 void enableRawMode() {
-    tcgetattr(STDIN_FILENO, &originalTermios);
+    if (tcgetattr(STDIN_FILENO, &originalTermios) == -1)
+        die("tcgetattr");
 
     termios raw = originalTermios;
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -21,7 +31,8 @@ void enableRawMode() {
     raw.c_cc[VMIN] = 0;
     raw.c_cc[VTIME] = 1;
 
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
+        die("tcsetattr");
 }
 
 int main() {
@@ -31,7 +42,8 @@ int main() {
 
     while (true) {
         char c = '\0';
-        read(STDIN_FILENO, &c, 1);
+        if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN)
+            die("read");
 
         if (isControl(c)) {
             writefln("%d\r", c);
