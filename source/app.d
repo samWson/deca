@@ -14,6 +14,7 @@ void enableRawMode() {
 
     termios raw = originalTermios;
     raw.c_iflag &= ~(ICRNL | IXON);
+    raw.c_oflag &= ~(OPOST);
     raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
@@ -31,9 +32,9 @@ int main() {
         char c = buffer[0];
 
         if (isControl(c)) {
-            writefln("%d", c);
+            writefln("%d\r", c);
         } else {
-            writefln("%d ('%c')", c, c);
+            writefln("%d ('%c')\r", c, c);
         }
     }
 
