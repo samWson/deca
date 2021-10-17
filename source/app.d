@@ -9,7 +9,9 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-char ctrlKey(char k) { return k & '\x1f'; }
+char ctrlKey(char k) {
+    return k & '\x1f';
+}
 
 // *** data ***
 
@@ -48,7 +50,7 @@ char editorReadKey() {
     char c;
 
     while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
-        if ( nread == -1 && errno != EAGAIN)
+        if (nread == -1 && errno != EAGAIN)
             die("read");
     }
 
@@ -60,8 +62,8 @@ char editorReadKey() {
 void editorProcessKeypress() {
     const char c = editorReadKey();
 
-    switch(c) {
-        case ctrlKey('q'):
+    switch (c) {
+    case ctrlKey('q'):
         exit(0);
         break;
     }
