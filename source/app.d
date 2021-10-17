@@ -62,6 +62,14 @@ void exitProgram(int status) {
     exit(status);
 }
 
+// *** output ***
+
+void editorRefreshScreen() {
+    char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
+    std.stdio.stdout.rawWrite(clearEntireScreen);
+    std.stdio.stdout.flush();
+}
+
 // *** input ***
 
 void editorProcessKeypress() {
@@ -82,6 +90,7 @@ int main() {
     enableRawMode();
 
     while (true) {
+        editorRefreshScreen();
         editorProcessKeypress();
     }
 }
