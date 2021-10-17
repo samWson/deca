@@ -43,6 +43,30 @@ void enableRawMode() {
         die("tcsetattr");
 }
 
+char editorReadKey() {
+    int nread;
+    char c;
+
+    while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
+        if ( nread == -1 && errno != EAGAIN)
+            die("read");
+    }
+
+    return c;
+}
+
+// *** input ***
+
+void editorProcessKeypress() {
+    const char c = editorReadKey();
+
+    switch(c) {
+        case ctrlKey('q'):
+        exit(0);
+        break;
+    }
+}
+
 // *** init ***
 
 int main() {
@@ -51,18 +75,7 @@ int main() {
         disableRawMode();
 
     while (true) {
-        char c = '\0';
-        if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN)
-            die("read");
-
-        if (isControl(c)) {
-            writefln("%d\r", c);
-        } else {
-            writefln("%d ('%c')\r", c, c);
-        }
-
-        if (c == ctrlKey('q'))
-            break;
+        editorProcessKeypress();
     }
 
     return 0;
