@@ -7,6 +7,10 @@ import core.stdc.errno;
 import core.stdc.stdio;
 import core.stdc.stdlib;
 
+// *** defines ***
+
+char ctrlKey(char k) { return k & '\x1f'; }
+
 // *** data ***
 
 termios originalTermios;
@@ -57,7 +61,7 @@ int main() {
             writefln("%d ('%c')\r", c, c);
         }
 
-        if (c == 'q')
+        if (c == ctrlKey('q'))
             break;
     }
 
