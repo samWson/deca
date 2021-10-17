@@ -57,6 +57,11 @@ char editorReadKey() {
     return c;
 }
 
+void exitProgram(int status) {
+    disableRawMode();
+    exit(status);
+}
+
 // *** input ***
 
 void editorProcessKeypress() {
@@ -64,7 +69,9 @@ void editorProcessKeypress() {
 
     switch (c) {
     case ctrlKey('q'):
-        exit(0);
+        exitProgram(0);
+        break;
+    default:
         break;
     }
 }
@@ -73,12 +80,8 @@ void editorProcessKeypress() {
 
 int main() {
     enableRawMode();
-    scope (exit)
-        disableRawMode();
 
     while (true) {
         editorProcessKeypress();
     }
-
-    return 0;
 }
