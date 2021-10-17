@@ -46,7 +46,7 @@ void enableRawMode() {
 }
 
 char editorReadKey() {
-    int nread;
+    long nread;
     char c;
 
     while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
