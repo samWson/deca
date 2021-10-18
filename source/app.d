@@ -20,7 +20,9 @@ termios originalTermios;
 // *** terminal ***
 
 void die(const char* message) {
+    editorRefreshScreen();
     perror(message);
+
     exit(1);
 }
 
@@ -58,7 +60,9 @@ char editorReadKey() {
 }
 
 void exitProgram(int status) {
+    editorRefreshScreen();
     disableRawMode();
+
     exit(status);
 }
 
