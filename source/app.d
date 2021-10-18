@@ -65,8 +65,11 @@ void exitProgram(int status) {
 // *** output ***
 
 void editorRefreshScreen() {
-    char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
+    const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
+    const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
+
     std.stdio.stdout.rawWrite(clearEntireScreen);
+    std.stdio.stdout.rawWrite(cursorToTopLeft);
     std.stdio.stdout.flush();
 }
 
