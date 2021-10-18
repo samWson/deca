@@ -68,11 +68,25 @@ void exitProgram(int status) {
 
 // *** output ***
 
+void editorDrawRows() {
+    const char[] leftGutter = ['~', '\r', '\n'];
+    int y;
+
+    for (y = 0; y < 24; y++) {
+        std.stdio.stdout.rawWrite(leftGutter);
+    }
+}
+
 void editorRefreshScreen() {
     const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
     const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
 
     std.stdio.stdout.rawWrite(clearEntireScreen);
+    std.stdio.stdout.rawWrite(cursorToTopLeft);
+    std.stdio.stdout.flush();
+
+    editorDrawRows();
+
     std.stdio.stdout.rawWrite(cursorToTopLeft);
     std.stdio.stdout.flush();
 }
