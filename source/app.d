@@ -20,7 +20,11 @@ char ctrlKey(char k) {
 
 // *** data ***
 
-termios originalTermios;
+struct EditorConfig {
+    termios originalTermios;
+}
+
+EditorConfig E;
 
 // *** terminal ***
 
@@ -35,15 +39,15 @@ void die(const char* message) {
 }
 
 void disableRawMode() {
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTermios) == -1)
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &E.originalTermios) == -1)
         die("tcsetattr");
 }
 
 void enableRawMode() {
-    if (tcgetattr(STDIN_FILENO, &originalTermios) == -1)
+    if (tcgetattr(STDIN_FILENO, &E.originalTermios) == -1)
         die("tcgetattr");
 
-    termios raw = originalTermios;
+    termios raw = E.originalTermios;
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     raw.c_oflag &= ~(OPOST);
     raw.c_cflag &= ~(CS8);
