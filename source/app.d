@@ -9,6 +9,11 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
+enum escapeSequence {
+    clearEntireScreen = ['\x1b', '[', '2', 'J'],
+    cursorToTopLeft = ['\x1b', '[', 'H']
+}
+
 char ctrlKey(char k) {
     return k & '\x1f';
 }
@@ -20,11 +25,8 @@ termios originalTermios;
 // *** terminal ***
 
 void die(const char* message) {
-    const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
-    const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
-
-    std.stdio.stdout.rawWrite(clearEntireScreen);
-    std.stdio.stdout.rawWrite(cursorToTopLeft);
+    std.stdio.stdout.rawWrite(escapeSequence.clearEntireScreen);
+    std.stdio.stdout.rawWrite(escapeSequence.cursorToTopLeft);
     std.stdio.stdout.flush();
 
     perror(message);
@@ -66,11 +68,8 @@ char editorReadKey() {
 }
 
 void exitProgram(int status) {
-    const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
-    const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
-
-    std.stdio.stdout.rawWrite(clearEntireScreen);
-    std.stdio.stdout.rawWrite(cursorToTopLeft);
+    std.stdio.stdout.rawWrite(escapeSequence.clearEntireScreen);
+    std.stdio.stdout.rawWrite(escapeSequence.cursorToTopLeft);
     std.stdio.stdout.flush();
 
     disableRawMode();
