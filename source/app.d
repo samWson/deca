@@ -20,7 +20,13 @@ termios originalTermios;
 // *** terminal ***
 
 void die(const char* message) {
-    editorRefreshScreen();
+    const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
+    const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
+
+    std.stdio.stdout.rawWrite(clearEntireScreen);
+    std.stdio.stdout.rawWrite(cursorToTopLeft);
+    std.stdio.stdout.flush();
+
     perror(message);
 
     exit(1);
@@ -60,7 +66,13 @@ char editorReadKey() {
 }
 
 void exitProgram(int status) {
-    editorRefreshScreen();
+    const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
+    const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
+
+    std.stdio.stdout.rawWrite(clearEntireScreen);
+    std.stdio.stdout.rawWrite(cursorToTopLeft);
+    std.stdio.stdout.flush();
+
     disableRawMode();
 
     exit(status);
