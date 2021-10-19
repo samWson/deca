@@ -9,7 +9,7 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-enum escapeSequence {
+enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
     cursorToTopLeft = ['\x1b', '[', 'H']
 }
@@ -29,8 +29,8 @@ EditorConfig E;
 // *** terminal ***
 
 void die(const char* message) {
-    std.stdio.stdout.rawWrite(escapeSequence.clearEntireScreen);
-    std.stdio.stdout.rawWrite(escapeSequence.cursorToTopLeft);
+    std.stdio.stdout.rawWrite(EscapeSequence.clearEntireScreen);
+    std.stdio.stdout.rawWrite(EscapeSequence.cursorToTopLeft);
     std.stdio.stdout.flush();
 
     perror(message);
@@ -72,8 +72,8 @@ char editorReadKey() {
 }
 
 void exitProgram(int status) {
-    std.stdio.stdout.rawWrite(escapeSequence.clearEntireScreen);
-    std.stdio.stdout.rawWrite(escapeSequence.cursorToTopLeft);
+    std.stdio.stdout.rawWrite(EscapeSequence.clearEntireScreen);
+    std.stdio.stdout.rawWrite(EscapeSequence.cursorToTopLeft);
     std.stdio.stdout.flush();
 
     disableRawMode();
