@@ -1,5 +1,6 @@
 import std.ascii;
 import std.stdio;
+import core.sys.posix.sys.ioctl;
 import core.sys.linux.termios;
 import core.sys.linux.unistd;
 import core.sys.linux.stdio;
@@ -21,6 +22,8 @@ char ctrlKey(char k) {
 // *** data ***
 
 struct EditorConfig {
+    int screenRows;
+    int screenColumns;
     termios originalTermios;
 }
 
@@ -81,13 +84,26 @@ void exitProgram(int status) {
     exit(status);
 }
 
+int getWindowSize(ref int rows, ref int cols) {
+    winsize ws;
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+        return -1;
+    } else {
+        cols = ws.ws_col;
+        rows = ws.ws_row;
+
+        return 0;
+    }
+}
+
 // *** output ***
 
 void editorDrawRows() {
     const char[] leftGutter = ['~', '\r', '\n'];
     int y;
 
-    for (y = 0; y < 24; y++) {
+    for (y = 0; y < E.screenRows; y++) {
         std.stdio.stdout.rawWrite(leftGutter);
     }
 }
@@ -122,8 +138,14 @@ void editorProcessKeypress() {
 
 // *** init ***
 
+void initEditor() {
+    if (getWindowSize(E.screenRows, E.screenColumns) == -1)
+        die("getWindowSize");
+}
+
 int main() {
     enableRawMode();
+    initEditor();
 
     while (true) {
         editorRefreshScreen();
