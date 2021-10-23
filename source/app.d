@@ -13,7 +13,8 @@ import core.stdc.stdlib;
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
     cursorTo999BottomRight = ['\x1b', '[', '9', '9', '9', 'C', '\x1b', '[', '9', '9', '9', 'B'],
-    cursorToTopLeft = ['\x1b', '[', 'H']
+    cursorToTopLeft = ['\x1b', '[', 'H'],
+    reportCursorPosition = ['\x1b', '[', '6', 'n']
 }
 
 char ctrlKey(char k) {
@@ -85,6 +86,27 @@ void exitProgram(int status) {
     exit(status);
 }
 
+int getCursorPosition(ref int rows, ref int cols) {
+    std.stdio.stdout.rawWrite(EscapeSequence.reportCursorPosition);
+    scope(failure) return -1;
+
+    writef("\r\n");
+
+    while (!std.stdio.stdin.eof) {
+        auto buffer = std.stdio.stdin.rawRead(new char[1]);
+
+        if (isControl(buffer[0])) {
+            writef("%d\r\n", buffer[0]);
+        } else {
+            writef("%d ('%c')\r\n", buffer[0], buffer[0]);
+        }
+    }
+
+    editorReadKey();
+
+    return -1;
+}
+
 int getWindowSize(ref int rows, ref int cols) {
     winsize ws;
 
@@ -93,8 +115,7 @@ int getWindowSize(ref int rows, ref int cols) {
         std.stdio.stdout.rawWrite(EscapeSequence.cursorTo999BottomRight);
         scope(failure) return -1;
 
-        editorReadKey();
-        return -1;
+        return getCursorPosition(rows, cols);
     } else {
         cols = ws.ws_col;
         rows = ws.ws_row;
