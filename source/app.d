@@ -12,6 +12,7 @@ import core.stdc.stdlib;
 
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
+    cursorTo999BottomRight = ['\x1b', '[', '9', '9', '9', 'C', '\x1b', '[', '9', '9', '9', 'B'],
     cursorToTopLeft = ['\x1b', '[', 'H']
 }
 
@@ -87,7 +88,12 @@ void exitProgram(int status) {
 int getWindowSize(ref int rows, ref int cols) {
     winsize ws;
 
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+    // TODO: `1` here is temporary to allow testing of the second `if` condition.
+    if (1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+        std.stdio.stdout.rawWrite(EscapeSequence.cursorTo999BottomRight);
+        scope(failure) return -1;
+
+        editorReadKey();
         return -1;
     } else {
         cols = ws.ws_col;
