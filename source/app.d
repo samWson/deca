@@ -129,10 +129,11 @@ int getWindowSize(ref int rows, ref int cols) {
 void editorDrawRows(ref char[] appendbuffer) {
     const char[] leftGutter = ['~'];
     const char[] lineEnd = ['\r', '\n'];
-    int y;
+    const char[] clearToEndLine = ['\x1b', '[', 'K'];
 
-    for (y = 0; y < E.screenRows; y++) {
+    for (int y = 0; y < E.screenRows; y++) {
         appendbuffer ~= leftGutter;
+        appendbuffer ~= clearToEndLine;
 
         if (y < E.screenRows -1) {
             appendbuffer ~= lineEnd;
@@ -142,13 +143,11 @@ void editorDrawRows(ref char[] appendbuffer) {
 
 void editorRefreshScreen() {
     char[] appendbuffer = new char[165];
-    const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
     const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
     const char[] showCursor = ['\x1b', '[', '?', '2', '5', 'h'];
     const char[] hideCursor = ['\x1b', '[', '?', '2', '5', 'l'];
 
     appendbuffer ~= hideCursor;
-    appendbuffer ~= clearEntireScreen;
     appendbuffer ~= cursorToTopLeft;
 
     editorDrawRows(appendbuffer);
