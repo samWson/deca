@@ -126,31 +126,33 @@ int getWindowSize(ref int rows, ref int cols) {
 
 // *** output ***
 
-void editorDrawRows() {
+void editorDrawRows(ref char[] appendbuffer) {
     const char[] leftGutter = ['~'];
     const char[] lineEnd = ['\r', '\n'];
     int y;
 
     for (y = 0; y < E.screenRows; y++) {
-        std.stdio.stdout.rawWrite(leftGutter);
+        appendbuffer ~= leftGutter;
 
         if (y < E.screenRows -1) {
-            std.stdio.stdout.rawWrite(lineEnd);
+            appendbuffer ~= lineEnd;
         }
     }
 }
 
 void editorRefreshScreen() {
+    char[] appendbuffer = new char[165];
     const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
     const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
 
-    std.stdio.stdout.rawWrite(clearEntireScreen);
-    std.stdio.stdout.rawWrite(cursorToTopLeft);
-    std.stdio.stdout.flush();
+    appendbuffer ~= clearEntireScreen;
+    appendbuffer ~= cursorToTopLeft;
 
-    editorDrawRows();
+    editorDrawRows(appendbuffer);
 
-    std.stdio.stdout.rawWrite(cursorToTopLeft);
+    appendbuffer ~= cursorToTopLeft;
+
+    std.stdio.stdout.rawWrite(appendbuffer);
     std.stdio.stdout.flush();
 }
 
