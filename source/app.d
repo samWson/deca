@@ -127,11 +127,16 @@ int getWindowSize(ref int rows, ref int cols) {
 // *** output ***
 
 void editorDrawRows() {
-    const char[] leftGutter = ['~', '\r', '\n'];
+    const char[] leftGutter = ['~'];
+    const char[] lineEnd = ['\r', '\n'];
     int y;
 
     for (y = 0; y < E.screenRows; y++) {
         std.stdio.stdout.rawWrite(leftGutter);
+
+        if (y < E.screenRows -1) {
+            std.stdio.stdout.rawWrite(lineEnd);
+        }
     }
 }
 
