@@ -13,6 +13,8 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
+immutable decaVersion = "2021.10.25";
+
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
     cursorTo999BottomRight = ['\x1b', '[', '9', '9', '9', 'C', '\x1b', '[', '9', '9', '9', 'B'],
@@ -132,7 +134,17 @@ void editorDrawRows(ref char[] appendbuffer) {
     const char[] clearToEndLine = ['\x1b', '[', 'K'];
 
     for (int y = 0; y < E.screenRows; y++) {
-        appendbuffer ~= leftGutter;
+        if (y == E.screenRows / 3) {
+            string welcome = format("Deca editor -- version %s", decaVersion);
+
+            if (welcome.length > E.screenColumns)
+                welcome.length = E.screenColumns;
+
+            appendbuffer ~= welcome;
+        } else {
+            appendbuffer ~= leftGutter;
+        }
+
         appendbuffer ~= clearToEndLine;
 
         if (y < E.screenRows -1) {
