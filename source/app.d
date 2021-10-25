@@ -1,5 +1,7 @@
+import std.algorithm;
 import std.ascii;
 import std.stdio;
+import std.string;
 import core.sys.posix.sys.ioctl;
 import core.sys.linux.termios;
 import core.sys.linux.unistd;
@@ -90,17 +92,13 @@ int getCursorPosition(ref int rows, ref int cols) {
     std.stdio.stdout.rawWrite(EscapeSequence.reportCursorPosition);
     scope(failure) return -1;
 
-    writef("\r\n");
+    char[] buffer = std.stdio.stdin.rawRead(new char[32]);
 
-    while (!std.stdio.stdin.eof) {
-        auto buffer = std.stdio.stdin.rawRead(new char[1]);
+    const long index = buffer.indexOf('R');
 
-        if (isControl(buffer[0])) {
-            writef("%d\r\n", buffer[0]);
-        } else {
-            writef("%d ('%c')\r\n", buffer[0], buffer[0]);
-        }
-    }
+    char[] parsedResponse = buffer[0..index];
+
+    writef("\r\nparsedResponse[1..$]: '%s'\r\n", parsedResponse[1..$]);
 
     editorReadKey();
 
