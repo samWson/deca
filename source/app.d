@@ -144,13 +144,17 @@ void editorRefreshScreen() {
     char[] appendbuffer = new char[165];
     const char[] clearEntireScreen = ['\x1b', '[', '2', 'J'];
     const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
+    const char[] showCursor = ['\x1b', '[', '?', '2', '5', 'h'];
+    const char[] hideCursor = ['\x1b', '[', '?', '2', '5', 'l'];
 
+    appendbuffer ~= hideCursor;
     appendbuffer ~= clearEntireScreen;
     appendbuffer ~= cursorToTopLeft;
 
     editorDrawRows(appendbuffer);
 
     appendbuffer ~= cursorToTopLeft;
+    appendbuffer ~= showCursor;
 
     std.stdio.stdout.rawWrite(appendbuffer);
     std.stdio.stdout.flush();
