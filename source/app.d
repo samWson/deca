@@ -1,5 +1,6 @@
 import std.algorithm;
 import std.ascii;
+import std.format.read;
 import std.stdio;
 import std.string;
 import core.sys.posix.sys.ioctl;
@@ -98,11 +99,13 @@ int getCursorPosition(ref int rows, ref int cols) {
 
     char[] parsedResponse = buffer[0..index];
 
-    writef("\r\nparsedResponse[1..$]: '%s'\r\n", parsedResponse[1..$]);
+    if (parsedResponse[0] != '\x1b' || parsedResponse[1] != '[')
+        return -1;
 
-    editorReadKey();
+    if (formattedRead(parsedResponse[2..$], "%d;%d", rows, cols) != 2)
+        return -1;
 
-    return -1;
+    return 0;
 }
 
 int getWindowSize(ref int rows, ref int cols) {
