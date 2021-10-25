@@ -111,8 +111,7 @@ int getCursorPosition(ref int rows, ref int cols) {
 int getWindowSize(ref int rows, ref int cols) {
     winsize ws;
 
-    // TODO: `1` here is temporary to allow testing of the second `if` condition.
-    if (1 || ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
         std.stdio.stdout.rawWrite(EscapeSequence.cursorTo999BottomRight);
         scope(failure) return -1;
 
