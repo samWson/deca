@@ -13,7 +13,7 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-immutable decaVersion = "2021.10.25";
+immutable decaVersion = "2021.10.26";
 
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
@@ -136,6 +136,18 @@ void editorDrawRows(ref char[] appendbuffer) {
     for (int y = 0; y < E.screenRows; y++) {
         if (y == E.screenRows / 3) {
             string welcome = format("Deca editor -- version %s", decaVersion);
+
+            ulong padding = (E.screenColumns - welcome.length) / 2;
+
+            if (padding > 0) {
+                appendbuffer ~= leftGutter;
+                padding--;
+            }
+
+            while (padding > 0) {
+               appendbuffer ~= " ";
+               padding--;
+            }
 
             if (welcome.length > E.screenColumns)
                 welcome.length = E.screenColumns;
