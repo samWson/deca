@@ -29,6 +29,7 @@ char ctrlKey(char k) {
 // *** data ***
 
 struct EditorConfig {
+    int cx, cy;
     int screenRows;
     int screenColumns;
     termios originalTermios;
@@ -200,6 +201,9 @@ void editorProcessKeypress() {
 // *** init ***
 
 void initEditor() {
+    E.cx = 0;
+    E.cx = 0;
+
     if (getWindowSize(E.screenRows, E.screenColumns) == -1)
         die("getWindowSize");
 }
