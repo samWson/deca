@@ -13,7 +13,7 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-immutable decaVersion = "2021.10.26";
+immutable decaVersion = "2021.10.27";
 
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
@@ -167,17 +167,21 @@ void editorDrawRows(ref char[] appendbuffer) {
 }
 
 void editorRefreshScreen() {
+    string cursorPosition(int row = 0, int column = 0) {
+        return format("\x1b[%s;%sH", row, column);
+    }
+
     char[] appendbuffer = new char[165];
-    const char[] cursorToTopLeft = ['\x1b', '[', 'H'];
     const char[] showCursor = ['\x1b', '[', '?', '2', '5', 'h'];
     const char[] hideCursor = ['\x1b', '[', '?', '2', '5', 'l'];
 
     appendbuffer ~= hideCursor;
-    appendbuffer ~= cursorToTopLeft;
+    appendbuffer ~= cursorPosition();
 
     editorDrawRows(appendbuffer);
 
-    appendbuffer ~= cursorToTopLeft;
+    appendbuffer ~= cursorPosition(E.cy + 1, E.cx + 1);
+
     appendbuffer ~= showCursor;
 
     std.stdio.stdout.rawWrite(appendbuffer);
