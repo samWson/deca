@@ -190,14 +190,35 @@ void editorRefreshScreen() {
 
 // *** input ***
 
+void editorMoveCursor(char key) {
+    final switch(key) {
+        case 'a':
+            E.cx--;
+            break;
+        case 'd':
+            E.cx++;
+            break;
+        case 'w':
+            E.cy--;
+            break;
+        case 's':
+            E.cy++;
+            break;
+    }
+}
+
 void editorProcessKeypress() {
     const char c = editorReadKey();
 
-    switch (c) {
+    final switch (c) {
     case ctrlKey('q'):
         exitProgram(0);
         break;
-    default:
+    case 'w':
+    case 's':
+    case 'a':
+    case 'd':
+        editorMoveCursor(c);
         break;
     }
 }
