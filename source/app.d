@@ -26,6 +26,13 @@ char ctrlKey(char k) {
     return k & '\x1f';
 }
 
+enum EditorKey {
+    arrowLeft = 1000,
+    arrowRight,
+    arrowUp,
+    arrowDown
+}
+
 // *** data ***
 
 struct EditorConfig {
@@ -70,7 +77,7 @@ void enableRawMode() {
         die("tcsetattr");
 }
 
-char editorReadKey() {
+int editorReadKey() {
     long nread;
     char c;
 
@@ -87,10 +94,10 @@ char editorReadKey() {
 
         if (seq[0] == '[') {
             final switch (seq[1]) {
-                case 'A': return 'w';
-                case 'B': return 's';
-                case 'C': return 'd';
-                case 'D': return 'a';
+                case 'A': return EditorKey.arrowUp;
+                case 'B': return EditorKey.arrowDown;
+                case 'C': return EditorKey.arrowRight;
+                case 'D': return EditorKey.arrowLeft;
             }
         }
 
@@ -208,34 +215,34 @@ void editorRefreshScreen() {
 
 // *** input ***
 
-void editorMoveCursor(char key) {
+void editorMoveCursor(int key) {
     final switch(key) {
-        case 'a':
+        case EditorKey.arrowLeft:
             E.cx--;
             break;
-        case 'd':
+        case EditorKey.arrowRight:
             E.cx++;
             break;
-        case 'w':
+        case EditorKey.arrowUp:
             E.cy--;
             break;
-        case 's':
+        case EditorKey.arrowDown:
             E.cy++;
             break;
     }
 }
 
 void editorProcessKeypress() {
-    const char c = editorReadKey();
+    const int c = editorReadKey();
 
     final switch (c) {
     case ctrlKey('q'):
         exitProgram(0);
         break;
-    case 'w':
-    case 's':
-    case 'a':
-    case 'd':
+    case EditorKey.arrowUp:
+    case EditorKey.arrowDown:
+    case EditorKey.arrowLeft:
+    case EditorKey.arrowRight:
         editorMoveCursor(c);
         break;
     }
