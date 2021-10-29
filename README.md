@@ -6,6 +6,8 @@ Deca should work fine with VT100 terminal emulators.
 
 Deca is run at the command line with the command `deca`.
 
+Deca uses [Calendar Versioning](https://calver.org/) in the format `YYYY.MM.DD`.
+
 ## License
 
 This repository is available under the BSD (BSD-3-Clause) license. See the LICENSE file for details.

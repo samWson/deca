@@ -13,7 +13,7 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-immutable decaVersion = "2021.10.27";
+immutable decaVersion = "2021.10.29";
 
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
