@@ -31,6 +31,7 @@ enum EditorKey {
     arrowRight,
     arrowUp,
     arrowDown,
+    delKey,
     homeKey,
     endKey,
     pageUp,
@@ -102,6 +103,7 @@ int editorReadKey() {
                 if (seq[2] == '~') {
                     final switch (seq[1]) {
                         case '1': return EditorKey.homeKey;
+                        case '3': return EditorKey.delKey;
                         case '4': return EditorKey.endKey;
                         case '5': return EditorKey.pageUp;
                         case '6': return EditorKey.pageDown;
