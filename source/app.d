@@ -13,7 +13,7 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-immutable decaVersion = "2021.10.29";
+immutable decaVersion = "2021.10.30";
 
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
@@ -30,7 +30,9 @@ enum EditorKey {
     arrowLeft = 1000,
     arrowRight,
     arrowUp,
-    arrowDown
+    arrowDown,
+    pageUp,
+    pageDown
 }
 
 // *** data ***
@@ -93,11 +95,21 @@ int editorReadKey() {
         if (read(STDIN_FILENO, &seq[1], 1) != 1) return '\x1b';
 
         if (seq[0] == '[') {
-            final switch (seq[1]) {
-                case 'A': return EditorKey.arrowUp;
-                case 'B': return EditorKey.arrowDown;
-                case 'C': return EditorKey.arrowRight;
-                case 'D': return EditorKey.arrowLeft;
+            if (seq[1] >= '0' && seq[1] <= '9') {
+                if (read(STDIN_FILENO, &seq[2], 1) != 1) return '\x1b';
+                if (seq[2] == '~') {
+                    final switch (seq[1]) {
+                        case '5': return EditorKey.pageUp;
+                        case '6': return EditorKey.pageDown;
+                    }
+                }
+            } else {
+                final switch (seq[1]) {
+                    case 'A': return EditorKey.arrowUp;
+                    case 'B': return EditorKey.arrowDown;
+                    case 'C': return EditorKey.arrowRight;
+                    case 'D': return EditorKey.arrowLeft;
+                }
             }
         }
 
@@ -247,6 +259,16 @@ void editorProcessKeypress() {
     case ctrlKey('q'):
         exitProgram(0);
         break;
+
+    case EditorKey.pageUp:
+    case EditorKey.pageDown:
+        {
+            for (int times = E.screenRows; times > 0; times--) {
+                editorMoveCursor(c == EditorKey.pageUp ? EditorKey.arrowUp : EditorKey.arrowDown);
+            }
+        }
+        break;
+
     case EditorKey.arrowUp:
     case EditorKey.arrowDown:
     case EditorKey.arrowLeft:
