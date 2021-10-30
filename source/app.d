@@ -40,10 +40,17 @@ enum EditorKey {
 
 // *** data ***
 
+struct Erow {
+    int size;
+    char[] chars;
+}
+
 struct EditorConfig {
     int cx, cy;
     int screenRows;
     int screenColumns;
+    int numrows;
+    Erow row;
     termios originalTermios;
 }
 
@@ -306,6 +313,7 @@ void editorProcessKeypress() {
 void initEditor() {
     E.cx = 0;
     E.cx = 0;
+    E.numrows = 0;
 
     if (getWindowSize(E.screenRows, E.screenColumns) == -1)
         die("getWindowSize");
