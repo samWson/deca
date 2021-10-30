@@ -31,6 +31,8 @@ enum EditorKey {
     arrowRight,
     arrowUp,
     arrowDown,
+    homeKey,
+    endKey,
     pageUp,
     pageDown
 }
@@ -99,8 +101,12 @@ int editorReadKey() {
                 if (read(STDIN_FILENO, &seq[2], 1) != 1) return '\x1b';
                 if (seq[2] == '~') {
                     final switch (seq[1]) {
+                        case '1': return EditorKey.homeKey;
+                        case '4': return EditorKey.endKey;
                         case '5': return EditorKey.pageUp;
                         case '6': return EditorKey.pageDown;
+                        case '7': return EditorKey.homeKey;
+                        case '8': return EditorKey.endKey;
                     }
                 }
             } else {
@@ -109,7 +115,14 @@ int editorReadKey() {
                     case 'B': return EditorKey.arrowDown;
                     case 'C': return EditorKey.arrowRight;
                     case 'D': return EditorKey.arrowLeft;
+                    case 'H': return EditorKey.homeKey;
+                    case 'F': return EditorKey.endKey;
                 }
+            }
+        } else if (seq[0] == 'O') {
+            final switch (seq[1]) {
+                case 'H': return EditorKey.homeKey;
+                case 'F': return EditorKey.endKey;
             }
         }
 
@@ -258,6 +271,14 @@ void editorProcessKeypress() {
     final switch (c) {
     case ctrlKey('q'):
         exitProgram(0);
+        break;
+
+    case EditorKey.homeKey:
+        E.cx = 0;
+        break;
+
+    case EditorKey.endKey:
+        E.cx = E.screenColumns - 1;
         break;
 
     case EditorKey.pageUp:
