@@ -41,7 +41,7 @@ enum EditorKey {
 // *** data ***
 
 struct Erow {
-    int size;
+    ulong size;
     char[] chars;
 }
 
@@ -186,6 +186,16 @@ int getWindowSize(ref int rows, ref int cols) {
     }
 }
 
+// *** file i/o ***
+
+void editorOpen() {
+    string line = "Hello, world!";
+
+    E.row.size = line.length;
+    E.row.chars = line.dup;
+    E.numrows = 1;
+}
+
 // *** output ***
 
 void editorDrawRows(ref char[] appendbuffer) {
@@ -194,27 +204,31 @@ void editorDrawRows(ref char[] appendbuffer) {
     const char[] clearToEndLine = ['\x1b', '[', 'K'];
 
     for (int y = 0; y < E.screenRows; y++) {
-        if (y == E.screenRows / 3) {
-            string welcome = format("Deca editor -- version %s", decaVersion);
+        if (y >= E.numrows) {
+            if (y == E.screenRows / 3) {
+                string welcome = format("Deca editor -- version %s", decaVersion);
 
-            ulong padding = (E.screenColumns - welcome.length) / 2;
+                ulong padding = (E.screenColumns - welcome.length) / 2;
 
-            if (padding > 0) {
+                if (padding > 0) {
+                    appendbuffer ~= leftGutter;
+                    padding--;
+                }
+
+                while (padding > 0) {
+                   appendbuffer ~= " ";
+                   padding--;
+                }
+
+                if (welcome.length > E.screenColumns)
+                    welcome.length = E.screenColumns;
+
+                appendbuffer ~= welcome;
+            } else {
                 appendbuffer ~= leftGutter;
-                padding--;
             }
-
-            while (padding > 0) {
-               appendbuffer ~= " ";
-               padding--;
-            }
-
-            if (welcome.length > E.screenColumns)
-                welcome.length = E.screenColumns;
-
-            appendbuffer ~= welcome;
         } else {
-            appendbuffer ~= leftGutter;
+            appendbuffer ~= E.row.chars;
         }
 
         appendbuffer ~= clearToEndLine;
@@ -322,6 +336,7 @@ void initEditor() {
 int main() {
     enableRawMode();
     initEditor();
+    editorOpen();
 
     while (true) {
         editorRefreshScreen();
