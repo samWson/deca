@@ -4,7 +4,7 @@ A text editor written in the D programming language. Based off the website [Buil
 
 Deca should work fine with VT100 terminal emulators.
 
-Deca is run at the command line with the command `deca`.
+Deca is run at the command line with the command `deca`. A blank file will be shown if no arguments are provided. A file can be opened by passing it as the first argument to the command: `deca wikipedia-text-editor.txt`.
 
 Deca uses [Calendar Versioning](https://calver.org/) in the format `YYYY.MM.DD`.
 

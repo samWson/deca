@@ -204,7 +204,9 @@ void editorOpen(string filename) {
     scope(exit)
         file.close();
 
-    editorAppendRow(file.readln());
+    while (!file.eof()) {
+        editorAppendRow(file.readln());
+    }
 }
 
 // *** output ***
