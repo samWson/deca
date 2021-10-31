@@ -41,7 +41,6 @@ enum EditorKey {
 // *** data ***
 
 struct Erow {
-    ulong size;
     string chars;
 }
 
@@ -50,7 +49,7 @@ struct EditorConfig {
     int screenRows;
     int screenColumns;
     int numrows;
-    Erow row;
+    Erow*[] rows;
     termios originalTermios;
 }
 
@@ -186,6 +185,15 @@ int getWindowSize(ref int rows, ref int cols) {
     }
 }
 
+// *** row operations ***
+
+void editorAppendRow(string s) {
+    auto row = new Erow(s.strip());
+
+    E.rows ~= row;
+    E.numrows++;
+}
+
 // *** file i/o ***
 
 void editorOpen(string filename) {
@@ -196,9 +204,7 @@ void editorOpen(string filename) {
     scope(exit)
         file.close();
 
-    E.row.chars = file.readln().strip();
-    E.row.size = E.row.chars.length;
-    E.numrows = 1;
+    editorAppendRow(file.readln());
 }
 
 // *** output ***
@@ -233,7 +239,7 @@ void editorDrawRows(ref char[] appendbuffer) {
                 appendbuffer ~= leftGutter;
             }
         } else {
-            appendbuffer ~= E.row.chars;
+            appendbuffer ~= E.rows[y].chars;
         }
 
         appendbuffer ~= clearToEndLine;
@@ -333,6 +339,7 @@ void initEditor() {
     E.cx = 0;
     E.cx = 0;
     E.numrows = 0;
+    E.rows = new Erow*[E.screenRows];
 
     if (getWindowSize(E.screenRows, E.screenColumns) == -1)
         die("getWindowSize");
