@@ -42,7 +42,7 @@ enum EditorKey {
 
 struct Erow {
     ulong size;
-    char[] chars;
+    string chars;
 }
 
 struct EditorConfig {
@@ -188,11 +188,16 @@ int getWindowSize(ref int rows, ref int cols) {
 
 // *** file i/o ***
 
-void editorOpen() {
-    string line = "Hello, world!";
+void editorOpen(string filename) {
+    auto file = File(filename, "r");
+    if (!file.isOpen())
+        die("file open");
 
-    E.row.size = line.length;
-    E.row.chars = line.dup;
+    scope(exit)
+        file.close();
+
+    E.row.chars = file.readln().strip();
+    E.row.size = E.row.chars.length;
     E.numrows = 1;
 }
 
@@ -333,10 +338,12 @@ void initEditor() {
         die("getWindowSize");
 }
 
-int main() {
+int main(string[] args) {
     enableRawMode();
     initEditor();
-    editorOpen();
+
+    if (args.length >= 2)
+        editorOpen(args[1]);
 
     while (true) {
         editorRefreshScreen();
