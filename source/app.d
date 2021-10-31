@@ -210,7 +210,7 @@ void editorDrawRows(ref char[] appendbuffer) {
 
     for (int y = 0; y < E.screenRows; y++) {
         if (y >= E.numrows) {
-            if (y == E.screenRows / 3) {
+            if (E.numrows == 0 && y == E.screenRows / 3) {
                 string welcome = format("Deca editor -- version %s", decaVersion);
 
                 ulong padding = (E.screenColumns - welcome.length) / 2;
