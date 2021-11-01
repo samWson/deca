@@ -13,7 +13,7 @@ import core.stdc.stdlib;
 
 // *** defines ***
 
-immutable decaVersion = "2021.10.30";
+immutable decaVersion = "2021.11.01";
 
 enum EscapeSequence {
     clearEntireScreen = ['\x1b', '[', '2', 'J'],
@@ -46,6 +46,7 @@ struct Erow {
 
 struct EditorConfig {
     int cx, cy;
+    int rowOffset;
     int screenRows;
     int screenColumns;
     int numrows;
@@ -211,37 +212,50 @@ void editorOpen(string filename) {
 
 // *** output ***
 
+void editorScroll() {
+    if (E.cy < E.rowOffset) {
+        E.rowOffset = E.cy;
+    }
+
+    if (E.cy >= E.rowOffset + E.screenRows) {
+        E.rowOffset = E.cy - E.screenRows + 1;
+    }
+}
+
 void editorDrawRows(ref char[] appendbuffer) {
     const char[] leftGutter = ['~'];
     const char[] lineEnd = ['\r', '\n'];
     const char[] clearToEndLine = ['\x1b', '[', 'K'];
 
     for (int y = 0; y < E.screenRows; y++) {
-        if (y >= E.numrows) {
-            if (E.numrows == 0 && y == E.screenRows / 3) {
-                string welcome = format("Deca editor -- version %s", decaVersion);
+        int fileRow = y + E.rowOffset;
+        if (fileRow >= E.numrows) {
+            if (y >= E.numrows) {
+                if (E.numrows == 0 && y == E.screenRows / 3) {
+                    string welcome = format("Deca editor -- version %s", decaVersion);
 
-                ulong padding = (E.screenColumns - welcome.length) / 2;
+                    ulong padding = (E.screenColumns - welcome.length) / 2;
 
-                if (padding > 0) {
+                    if (padding > 0) {
+                        appendbuffer ~= leftGutter;
+                        padding--;
+                    }
+
+                    while (padding > 0) {
+                       appendbuffer ~= " ";
+                       padding--;
+                    }
+
+                    if (welcome.length > E.screenColumns)
+                        welcome.length = E.screenColumns;
+
+                    appendbuffer ~= welcome;
+                } else {
                     appendbuffer ~= leftGutter;
-                    padding--;
                 }
-
-                while (padding > 0) {
-                   appendbuffer ~= " ";
-                   padding--;
-                }
-
-                if (welcome.length > E.screenColumns)
-                    welcome.length = E.screenColumns;
-
-                appendbuffer ~= welcome;
-            } else {
-                appendbuffer ~= leftGutter;
             }
         } else {
-            appendbuffer ~= E.rows[y].chars;
+            appendbuffer ~= E.rows[fileRow].chars;
         }
 
         appendbuffer ~= clearToEndLine;
@@ -257,6 +271,8 @@ void editorRefreshScreen() {
         return format("\x1b[%s;%sH", row, column);
     }
 
+    editorScroll();
+
     char[] appendbuffer = new char[165];
     const char[] showCursor = ['\x1b', '[', '?', '2', '5', 'h'];
     const char[] hideCursor = ['\x1b', '[', '?', '2', '5', 'l'];
@@ -266,7 +282,7 @@ void editorRefreshScreen() {
 
     editorDrawRows(appendbuffer);
 
-    appendbuffer ~= cursorPosition(E.cy + 1, E.cx + 1);
+    appendbuffer ~= cursorPosition((E.cy - E.rowOffset) + 1, E.cx + 1);
 
     appendbuffer ~= showCursor;
 
@@ -294,7 +310,7 @@ void editorMoveCursor(int key) {
             }
             break;
         case EditorKey.arrowDown:
-            if (E.cy != E.screenRows - 1) {
+            if (E.cy < E.numrows) {
                 E.cy++;
             }
             break;
@@ -340,6 +356,7 @@ void editorProcessKeypress() {
 void initEditor() {
     E.cx = 0;
     E.cx = 0;
+    E.rowOffset = 0;
     E.numrows = 0;
     E.rows = new Erow*[E.screenRows];
 
